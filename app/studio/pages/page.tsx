@@ -15,6 +15,11 @@ export default async function StudioPagesPage() {
 
   const about = pages?.find((item) => item.slug === "about");
   const contact = pages?.find((item) => item.slug === "contact");
+  const mediaOptions = data.mediaAssets.map((asset) => ({
+    id: asset.id,
+    fileName: asset.file_name,
+    url: asset.public_url,
+  }));
 
   return (
     <section className="space-y-6">
@@ -52,38 +57,30 @@ export default async function StudioPagesPage() {
               className="w-full rounded-md border border-[var(--line)] px-3 py-2"
             />
           </label>
-          <label className="space-y-1 text-sm block">
-            <span>Hero image URL</span>
-            <input
-              name="hero_image_url"
-              defaultValue={data.homepage.content.hero.image_url || ""}
-              className="w-full rounded-md border border-[var(--line)] px-3 py-2"
-            />
-          </label>
-          <label className="space-y-1 text-sm block">
-            <span>Story image URL</span>
-            <input
-              name="story_image_url"
-              defaultValue={data.homepage.content.story.image_url || ""}
-              className="w-full rounded-md border border-[var(--line)] px-3 py-2"
-            />
-          </label>
-          <label className="space-y-1 text-sm block">
-            <span>Seasonal image URL</span>
-            <input
-              name="seasonal_image_url"
-              defaultValue={data.homepage.content.seasonal.image_url || ""}
-              className="w-full rounded-md border border-[var(--line)] px-3 py-2"
-            />
-          </label>
-          <label className="space-y-1 text-sm block">
-            <span>OpenGraph image URL</span>
-            <input
-              name="og_image_url"
-              defaultValue={data.homepage.og_image_url || ""}
-              className="w-full rounded-md border border-[var(--line)] px-3 py-2"
-            />
-          </label>
+          <ImagePickerField
+            label="Hero image URL"
+            name="hero_image_url"
+            defaultValue={data.homepage.content.hero.image_url || ""}
+            mediaOptions={mediaOptions}
+          />
+          <ImagePickerField
+            label="Story image URL"
+            name="story_image_url"
+            defaultValue={data.homepage.content.story.image_url || ""}
+            mediaOptions={mediaOptions}
+          />
+          <ImagePickerField
+            label="Seasonal image URL"
+            name="seasonal_image_url"
+            defaultValue={data.homepage.content.seasonal.image_url || ""}
+            mediaOptions={mediaOptions}
+          />
+          <ImagePickerField
+            label="OpenGraph image URL"
+            name="og_image_url"
+            defaultValue={data.homepage.og_image_url || ""}
+            mediaOptions={mediaOptions}
+          />
           <label className="space-y-1 text-sm block">
             <span>Homepage content JSON</span>
             <textarea
@@ -106,6 +103,7 @@ export default async function StudioPagesPage() {
           defaultSeoTitle={about?.seo_title || ""}
           defaultSeoDescription={about?.seo_description || ""}
           defaultOgImageUrl={about?.og_image_url || ""}
+          mediaOptions={mediaOptions}
         />
       </article>
 
@@ -118,6 +116,7 @@ export default async function StudioPagesPage() {
           defaultSeoTitle={contact?.seo_title || ""}
           defaultSeoDescription={contact?.seo_description || ""}
           defaultOgImageUrl={contact?.og_image_url || ""}
+          mediaOptions={mediaOptions}
         />
       </article>
     </section>
@@ -131,6 +130,7 @@ function PageSimpleForm({
   defaultSeoTitle,
   defaultSeoDescription,
   defaultOgImageUrl,
+  mediaOptions,
 }: {
   slug: "about" | "contact";
   defaultTitle: string;
@@ -138,6 +138,7 @@ function PageSimpleForm({
   defaultSeoTitle: string;
   defaultSeoDescription: string;
   defaultOgImageUrl: string;
+  mediaOptions: Array<{ id: string; fileName: string; url: string }>;
 }) {
   const json = JSON.stringify({ body: defaultBody }, null, 2);
 
@@ -156,15 +157,56 @@ function PageSimpleForm({
         <span>SEO description</span>
         <textarea name="seo_description" rows={3} defaultValue={defaultSeoDescription} className="w-full rounded-md border border-[var(--line)] px-3 py-2" />
       </label>
-      <label className="space-y-1 text-sm block">
-        <span>OpenGraph image URL</span>
-        <input name="og_image_url" defaultValue={defaultOgImageUrl} className="w-full rounded-md border border-[var(--line)] px-3 py-2" />
-      </label>
+      <ImagePickerField
+        label="OpenGraph image URL"
+        name="og_image_url"
+        defaultValue={defaultOgImageUrl}
+        mediaOptions={mediaOptions}
+      />
       <label className="space-y-1 text-sm block">
         <span>Content JSON</span>
         <textarea name="content_json" rows={10} defaultValue={json} className="w-full rounded-md border border-[var(--line)] px-3 py-2 font-mono text-xs" />
       </label>
       <button className="rounded-md bg-[var(--forest)] px-4 py-2 font-semibold text-white">Save {slug} page</button>
     </form>
+  );
+}
+
+function ImagePickerField({
+  label,
+  name,
+  defaultValue,
+  mediaOptions,
+}: {
+  label: string;
+  name: string;
+  defaultValue: string;
+  mediaOptions: Array<{ id: string; fileName: string; url: string }>;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="space-y-1 text-sm block">
+        <span>{label}</span>
+        <input
+          name={name}
+          defaultValue={defaultValue}
+          list={`${name}-options`}
+          className="w-full rounded-md border border-[var(--line)] px-3 py-2"
+        />
+      </label>
+      <datalist id={`${name}-options`}>
+        {mediaOptions.map((asset) => (
+          <option key={asset.id} value={asset.url}>
+            {asset.fileName}
+          </option>
+        ))}
+      </datalist>
+      {defaultValue ? (
+        // Preview confirms selected media without requiring a separate media tab switch.
+        <div className="rounded-md border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-xs text-[var(--muted)]">
+          Selected: {defaultValue}
+        </div>
+      ) : null}
+    </div>
   );
 }
