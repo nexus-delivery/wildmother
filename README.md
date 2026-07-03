@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wild Mother - Artisan Commerce Platform v1
 
-## Getting Started
+Production-ready Next.js + Supabase website and Studio CMS for artisan food businesses.
 
-First, run the development server:
+## What is included
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Public artisan storefront with editable homepage sections
+- Studio admin area (renamed from Admin)
+- Supabase authentication for Studio login
+- Product CRUD with:
+	- title, short/long descriptions
+	- ingredients and allergens
+	- category and tags
+	- featured and visible toggles
+	- SEO title/description, slug, OpenGraph image URL
+	- multi-image gallery with drag-reorder and featured image
+- Unlimited category CRUD with SEO fields
+- Media Library with:
+	- drag-and-drop upload
+	- multiple image upload
+	- search
+	- delete
+	- reuse in products/pages
+	- copy image URL
+- Homepage CMS content editing
+- Site settings CMS
+- SEO foundations:
+	- per-page/product/category metadata
+	- OpenGraph support
+	- product JSON-LD schema
+	- automatic sitemap and robots
+- Responsive layouts for desktop/tablet/mobile
+
+## 1) Configure environment variables
+
+Use `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_NAME=Wild Mother
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 2) Create database and storage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Open Supabase SQL Editor.
+2. Run `supabase/schema.sql`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This creates all CMS tables, RLS policies, and the `media` storage bucket.
 
-## Learn More
+## 3) Create first Studio login user
 
-To learn more about Next.js, take a look at the following resources:
+Run:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+STUDIO_ADMIN_EMAIL=owner@example.com STUDIO_ADMIN_PASSWORD='strong-password-here' npm run studio:create-user
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 4) Start the app
 
-## Deploy on Vercel
+```bash
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Website: `http://localhost:3000`
+- Studio: `http://localhost:3000/studio/login`
+
+## 5) First content workflow
+
+1. Upload photos in Studio > Media Library.
+2. Create categories in Studio > Categories.
+3. Create products and attach/reorder images in Studio > Products.
+4. Edit homepage JSON/content in Studio > Pages.
+5. Update contact, social links, and defaults in Studio > Site Settings.
+
+## Notes
+
+- Pricing and checkout are intentionally not included in this phase.
+- The architecture is modular so this repo can be reused as the baseline for future artisan commerce clients.

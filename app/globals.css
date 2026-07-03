@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f3ebdc;
+  --cream: #fcf8ef;
+  --ink: #2f2923;
+  --forest: #2f4b33;
+  --olive: #5f6f45;
+  --sage: #9dad8f;
+  --honey: #bc8a3d;
+  --terracotta: #9e6444;
+  --brown: #6f513c;
+  --line: #dbcdb8;
+  --muted: #665d52;
+  --background: var(--cream);
+  --foreground: var(--ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-heading);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), serif;
+}
+
+.font-serif {
+  font-family: var(--font-heading), serif;
+}
+
+.hero-shell {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 10%, #fffdf8 0%, #f6ecd9 55%, #efdfc8 100%);
+}
+
+.texture-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  background-image: linear-gradient(90deg, rgba(166, 129, 86, 0.08) 50%, transparent 50%),
+    linear-gradient(rgba(166, 129, 86, 0.07) 50%, transparent 50%);
+  background-size: 14px 14px;
+  mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
+}
+
+.card-paper {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #fffefb;
+  padding: 1.25rem;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.card-paper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(80, 60, 40, 0.09);
+}
+
+.botanical-corner {
+  position: absolute;
+  right: 0.6rem;
+  top: 0.6rem;
+  width: 30px;
+  height: 30px;
+  border-top: 2px solid #93a07f;
+  border-right: 2px solid #93a07f;
+  border-radius: 0 10px 0 0;
+  opacity: 0.8;
+}
+
+.chip-card {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #fffef9 0%, #f8f2e4 100%);
+  padding: 1rem;
+}
+
+.btn-primary {
+  border-radius: 999px;
+  border: 1px solid #1d341f;
+  background: var(--forest);
+  color: #fff;
+  padding: 0.7rem 1.1rem;
+  font-weight: 600;
+}
+
+.btn-secondary {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--forest);
+  padding: 0.7rem 1.1rem;
+  font-weight: 600;
 }
