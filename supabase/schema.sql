@@ -32,9 +32,14 @@ create table if not exists public.site_settings (
   footer_text text,
   default_seo_title text,
   default_seo_description text,
+  logo_image_url text,
+  wordmark_image_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.site_settings add column if not exists logo_image_url text;
+alter table public.site_settings add column if not exists wordmark_image_url text;
 
 create table if not exists public.pages (
   id uuid primary key default gen_random_uuid(),
@@ -377,6 +382,24 @@ set
   content = excluded.content,
   seo_title = excluded.seo_title,
   seo_description = excluded.seo_description;
+
+insert into public.pages (slug, title, content, seo_title, seo_description)
+values
+(
+  'about',
+  'About',
+  '{"body":"Wild Mother is a small homestead studio focused on traditional food craft, seasonal produce, and honest ingredients."}'::jsonb,
+  'About Wild Mother',
+  'Learn the story behind Wild Mother and our homestead craft values.'
+),
+(
+  'contact',
+  'Contact',
+  '{"body":"For catering, wholesale, or local pickup questions, send us a note and we will respond shortly."}'::jsonb,
+  'Contact Wild Mother',
+  'Get in touch with Wild Mother for orders, wholesale, and event enquiries.'
+)
+on conflict (slug) do nothing;
 
 insert into storage.buckets (id, name, public, file_size_limit)
 values ('media', 'media', true, 10485760)

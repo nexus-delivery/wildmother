@@ -165,14 +165,30 @@ export async function updateHomepageContent(formData: FormData) {
   await requireStudioRole(["owner", "admin", "editor"]);
   const supabase = await getSupabaseServerClient();
 
+  const pageSlug = toTextOrNull(formData.get("page_slug")) || "home";
   const title = toTextOrNull(formData.get("title")) || "Homepage";
-  const content = safeJsonParse<CmsHomepageContent>(
-    toTextOrNull(formData.get("content_json")),
-    defaultHomepageContent,
-  );
+  const contentInput = toTextOrNull(formData.get("content_json"));
+
+  let content: CmsHomepageContent | Record<string, unknown>;
+
+  if (pageSlug === "home") {
+    const homeContent = safeJsonParse<CmsHomepageContent>(contentInput, defaultHomepageContent);
+
+    const heroImageUrl = toTextOrNull(formData.get("hero_image_url"));
+    const storyImageUrl = toTextOrNull(formData.get("story_image_url"));
+    const seasonalImageUrl = toTextOrNull(formData.get("seasonal_image_url"));
+
+    homeContent.hero.image_url = heroImageUrl || undefined;
+    homeContent.story.image_url = storyImageUrl || undefined;
+    homeContent.seasonal.image_url = seasonalImageUrl || undefined;
+
+    content = homeContent;
+  } else {
+    content = safeJsonParse<Record<string, unknown>>(contentInput, { body: "" });
+  }
 
   const payload = {
-    slug: "home",
+    slug: pageSlug,
     title,
     content,
     seo_title: toTextOrNull(formData.get("seo_title")),
@@ -188,7 +204,18 @@ export async function updateHomepageContent(formData: FormData) {
     throw error;
   }
 
-  revalidatePath("/");
+  if (pageSlug === "home") {
+    revalidatePath("/");
+  }
+
+  if (pageSlug === "about") {
+    revalidatePath("/about");
+  }
+
+  if (pageSlug === "contact") {
+    revalidatePath("/contact");
+  }
+
   revalidatePath("/studio/pages");
 }
 
@@ -211,6 +238,8 @@ export async function updateSiteSettings(formData: FormData) {
     footer_text: toTextOrNull(formData.get("footer_text")),
     default_seo_title: toTextOrNull(formData.get("default_seo_title")),
     default_seo_description: toTextOrNull(formData.get("default_seo_description")),
+    logo_image_url: toTextOrNull(formData.get("logo_image_url")),
+    wordmark_image_url: toTextOrNull(formData.get("wordmark_image_url")),
   };
 
   const { error } = await supabase

@@ -27,6 +27,8 @@ export default async function StudioSettingsPage() {
           <Field label="Facebook URL" name="facebook_url" value={settings.facebook_url || ""} />
           <Field label="Pinterest URL" name="pinterest_url" value={settings.pinterest_url || ""} />
           <Field label="Default SEO title" name="default_seo_title" value={settings.default_seo_title || ""} />
+          <Field label="Brand logo image URL" name="logo_image_url" value={settings.logo_image_url || ""} />
+          <Field label="Brand wordmark image URL" name="wordmark_image_url" value={settings.wordmark_image_url || ""} />
           <Field
             label="Default SEO description"
             name="default_seo_description"

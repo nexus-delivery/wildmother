@@ -71,4 +71,6 @@ export const defaultSiteSettings = {
   default_seo_title: "Wild Mother | Homestead Provisions",
   default_seo_description:
     "Wild Mother creates handcrafted bakery, pantry, and homestead essentials inspired by seasonal ingredients.",
+  logo_image_url: null,
+  wordmark_image_url: null,
 };

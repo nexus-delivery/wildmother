@@ -26,6 +26,7 @@ export default async function StudioPagesPage() {
       <article className="rounded-xl border border-[var(--line)] bg-white p-5">
         <h2 className="font-serif text-2xl">Homepage Content</h2>
         <form action={updateHomepageContent} className="mt-4 space-y-3">
+          <input type="hidden" name="page_slug" value="home" />
           <label className="space-y-1 text-sm block">
             <span>Page title</span>
             <input
@@ -48,6 +49,30 @@ export default async function StudioPagesPage() {
               name="seo_description"
               rows={3}
               defaultValue={data.homepage.seo_description || ""}
+              className="w-full rounded-md border border-[var(--line)] px-3 py-2"
+            />
+          </label>
+          <label className="space-y-1 text-sm block">
+            <span>Hero image URL</span>
+            <input
+              name="hero_image_url"
+              defaultValue={data.homepage.content.hero.image_url || ""}
+              className="w-full rounded-md border border-[var(--line)] px-3 py-2"
+            />
+          </label>
+          <label className="space-y-1 text-sm block">
+            <span>Story image URL</span>
+            <input
+              name="story_image_url"
+              defaultValue={data.homepage.content.story.image_url || ""}
+              className="w-full rounded-md border border-[var(--line)] px-3 py-2"
+            />
+          </label>
+          <label className="space-y-1 text-sm block">
+            <span>Seasonal image URL</span>
+            <input
+              name="seasonal_image_url"
+              defaultValue={data.homepage.content.seasonal.image_url || ""}
               className="w-full rounded-md border border-[var(--line)] px-3 py-2"
             />
           </label>

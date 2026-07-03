@@ -37,19 +37,31 @@ export default async function HomePage() {
               {content.hero.button_label || "Explore"}
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 self-end">
-            {media.slice(0, 4).map((asset) => (
-              <div key={asset.id} className="relative aspect-[4/5] overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--paper)]">
-                <Image
-                  src={asset.public_url}
-                  alt={asset.alt_text || settings.business_name || "Wild Mother"}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                />
-              </div>
-            ))}
-          </div>
+          {content.hero.image_url ? (
+            <div className="relative aspect-[4/5] self-end overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--paper)]">
+              <Image
+                src={content.hero.image_url}
+                alt={settings.business_name || "Wild Mother"}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 40vw"
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 self-end">
+              {media.slice(0, 4).map((asset) => (
+                <div key={asset.id} className="relative aspect-[4/5] overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--paper)]">
+                  <Image
+                    src={asset.public_url}
+                    alt={asset.alt_text || settings.business_name || "Wild Mother"}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -79,6 +91,11 @@ export default async function HomePage() {
 
       <section className="mx-auto grid w-full max-w-7xl gap-10 px-6 pb-20 md:grid-cols-[1.2fr_1fr]">
         <div className="card-paper">
+          {content.story.image_url ? (
+            <div className="relative mb-4 aspect-[16/9] overflow-hidden rounded-lg border border-[var(--line)]">
+              <Image src={content.story.image_url} alt={content.story.title} fill className="object-cover" sizes="50vw" />
+            </div>
+          ) : null}
           <p className="text-xs uppercase tracking-[0.18em] text-[var(--olive)]">{content.story.subtitle}</p>
           <h2 className="mt-2 font-serif text-5xl leading-tight">{content.story.title}</h2>
           <p className="mt-4 text-[var(--ink)]">{content.story.body}</p>
@@ -88,6 +105,11 @@ export default async function HomePage() {
         </div>
 
         <div className="rounded-2xl border border-[var(--line)] bg-white p-6">
+          {content.seasonal.image_url ? (
+            <div className="relative mb-4 aspect-[16/9] overflow-hidden rounded-lg border border-[var(--line)]">
+              <Image src={content.seasonal.image_url} alt={content.seasonal.title} fill className="object-cover" sizes="40vw" />
+            </div>
+          ) : null}
           <h3 className="font-serif text-3xl">{content.seasonal.title}</h3>
           <p className="mt-3 text-[var(--muted)]">{content.seasonal.body}</p>
           <div className="mt-6 grid grid-cols-3 gap-2">
