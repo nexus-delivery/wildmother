@@ -71,6 +71,7 @@ create table if not exists public.products (
   category_id uuid references public.categories(id) on delete set null,
   title text not null,
   slug text not null unique,
+  price text,
   short_description text,
   long_description text,
   ingredients text,
@@ -84,6 +85,8 @@ create table if not exists public.products (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.products add column if not exists price text;
 
 create table if not exists public.media_assets (
   id uuid primary key default gen_random_uuid(),
