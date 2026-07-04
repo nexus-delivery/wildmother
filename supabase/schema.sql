@@ -71,6 +71,7 @@ create table if not exists public.products (
   category_id uuid references public.categories(id) on delete set null,
   title text not null,
   slug text not null unique,
+  price text,
   short_description text,
   long_description text,
   ingredients text,

@@ -2,17 +2,43 @@ import Link from "next/link";
 import { logAuthDebug } from "@/lib/auth-debug";
 import { requireStudioUser } from "@/lib/studio-auth";
 
-const navItems = [
-  { href: "/studio", label: "Dashboard" },
-  { href: "/studio/journals", label: "Journals" },
-  { href: "/studio/products", label: "Products" },
-  { href: "/studio/categories", label: "Categories" },
-  { href: "/studio/navigation", label: "Navigation" },
-  { href: "/studio/media", label: "Media Library" },
-  { href: "/studio/pages", label: "Pages" },
-  { href: "/studio/settings", label: "Site Settings" },
-  { href: "/studio/users", label: "Studio Users" },
-  { href: "/studio/seo", label: "SEO" },
+const navGroups = [
+  {
+    label: null,
+    items: [{ href: "/studio", label: "Dashboard", icon: "⌂" }],
+  },
+  {
+    label: "Website",
+    items: [
+      { href: "/studio/website/homepage", label: "Homepage", icon: "🏠" },
+      { href: "/studio/website/about", label: "About", icon: "✦" },
+      { href: "/studio/website/contact", label: "Contact", icon: "✉" },
+      { href: "/studio/seo", label: "SEO", icon: "⌕" },
+    ],
+  },
+  {
+    label: "Shop",
+    items: [
+      { href: "/studio/products", label: "Products", icon: "⬡" },
+      { href: "/studio/categories", label: "Categories", icon: "⊞" },
+      { href: "/studio/collections", label: "Collections", icon: "❖" },
+    ],
+  },
+  {
+    label: null,
+    items: [{ href: "/studio/media", label: "Media Library", icon: "◫" }],
+  },
+  {
+    label: null,
+    items: [{ href: "/studio/journals", label: "Journal", icon: "✑" }],
+  },
+  {
+    label: null,
+    items: [
+      { href: "/studio/settings", label: "Settings", icon: "⚙" },
+      { href: "/studio/users", label: "Studio Users", icon: "⊙" },
+    ],
+  },
 ];
 
 export default async function StudioProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -25,36 +51,71 @@ export default async function StudioProtectedLayout({ children }: { children: Re
   });
 
   return (
-    <div className="min-h-screen bg-[var(--paper)]">
-      <header className="border-b border-[var(--line)] bg-white">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="font-serif text-2xl text-[var(--forest)]">Studio</p>
-            <p className="text-xs text-[var(--muted)]">{profile.email} · {profile.role}</p>
-          </div>
-          <Link href="/studio/sign-out" className="rounded-md border border-[var(--line)] px-4 py-2 text-sm">
+    <div className="min-h-screen" style={{ background: "var(--paper)" }}>
+      {/* Mobile top bar */}
+      <header className="border-b border-[var(--line)] bg-white md:hidden">
+        <div className="flex items-center justify-between px-4 py-3">
+          <p className="font-serif text-xl text-[var(--forest)]">Wild Mother Studio</p>
+          <Link href="/studio/sign-out" className="rounded-full border border-[var(--line)] px-3 py-1 text-xs text-[var(--muted)]">
             Sign out
           </Link>
         </div>
       </header>
 
-      <div className="mx-auto grid w-full max-w-7xl gap-6 px-6 py-6 md:grid-cols-[220px_1fr]">
-        <nav className="rounded-xl border border-[var(--line)] bg-white p-3">
-          <ul className="space-y-2">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="block rounded-md px-3 py-2 text-sm hover:bg-[var(--paper)]">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <Link href="/" className="mt-4 block rounded-md border border-[var(--line)] px-3 py-2 text-sm text-center">
-            View site
-          </Link>
-        </nav>
+      <div className="mx-auto flex w-full max-w-7xl">
+        {/* Sidebar */}
+        <aside className="hidden md:flex md:w-56 md:shrink-0 md:flex-col md:border-r md:border-[var(--line)] md:bg-white md:min-h-screen">
+          {/* Brand */}
+          <div className="border-b border-[var(--line)] px-5 py-5">
+            <p className="font-serif text-xl leading-tight text-[var(--forest)]">Wild Mother</p>
+            <p className="mt-0.5 text-[10px] uppercase tracking-widest text-[var(--sage)]">Studio</p>
+          </div>
 
-        <main>{children}</main>
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto px-3 py-4">
+            {navGroups.map((group, gi) => (
+              <div key={gi} className={gi > 0 ? "mt-4" : ""}>
+                {group.label ? (
+                  <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-[var(--muted)]">{group.label}</p>
+                ) : null}
+                <ul className="space-y-0.5">
+                  {group.items.map((item) => (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--ink)] transition-colors hover:bg-[var(--paper)] hover:text-[var(--forest)]"
+                      >
+                        <span className="w-4 text-center text-base opacity-60">{item.icon}</span>
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+
+          {/* Footer */}
+          <div className="border-t border-[var(--line)] px-3 py-3">
+            <p className="mb-2 truncate px-2 text-xs text-[var(--muted)]">{profile.email}</p>
+            <Link
+              href="/"
+              target="_blank"
+              className="mb-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--forest)] hover:bg-[var(--paper)]"
+            >
+              <span className="opacity-60">↗</span> Preview site
+            </Link>
+            <Link
+              href="/studio/sign-out"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--paper)]"
+            >
+              <span className="opacity-60">→</span> Sign out
+            </Link>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <main className="min-w-0 flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
       </div>
     </div>
   );

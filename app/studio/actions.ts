@@ -87,6 +87,7 @@ export async function upsertProduct(formData: FormData) {
     title,
     slug: toTextOrNull(formData.get("slug")) || slugify(title),
     category_id: toTextOrNull(formData.get("category_id")),
+    price: toTextOrNull(formData.get("price")),
     short_description: toTextOrNull(formData.get("short_description")),
     long_description: toTextOrNull(formData.get("long_description")),
     ingredients: toTextOrNull(formData.get("ingredients")),
@@ -172,19 +173,77 @@ export async function updateHomepageContent(formData: FormData) {
   let content: CmsHomepageContent | Record<string, unknown>;
 
   if (pageSlug === "home") {
-    const homeContent = safeJsonParse<CmsHomepageContent>(contentInput, defaultHomepageContent);
-
+    // Support both visual editor (individual fields) and legacy JSON mode
+    const heroTitle = toTextOrNull(formData.get("hero_title"));
     const heroImageUrl = toTextOrNull(formData.get("hero_image_url"));
     const storyImageUrl = toTextOrNull(formData.get("story_image_url"));
     const seasonalImageUrl = toTextOrNull(formData.get("seasonal_image_url"));
 
-    homeContent.hero.image_url = heroImageUrl || undefined;
-    homeContent.story.image_url = storyImageUrl || undefined;
-    homeContent.seasonal.image_url = seasonalImageUrl || undefined;
-
-    content = homeContent;
+    if (heroTitle !== null || contentInput === null) {
+      // Visual editor mode – build content from named fields
+      const homeContent: CmsHomepageContent = { ...defaultHomepageContent };
+      homeContent.hero = {
+        key: "hero",
+        title: heroTitle || homeContent.hero.title,
+        subtitle: toTextOrNull(formData.get("hero_subtitle")) ?? homeContent.hero.subtitle,
+        body: toTextOrNull(formData.get("hero_body")) ?? homeContent.hero.body,
+        button_label: toTextOrNull(formData.get("hero_button_label")) ?? homeContent.hero.button_label,
+        button_url: toTextOrNull(formData.get("hero_button_url")) ?? homeContent.hero.button_url,
+        image_url: heroImageUrl ?? homeContent.hero.image_url,
+      };
+      homeContent.story = {
+        key: "story",
+        title: toTextOrNull(formData.get("story_title")) ?? homeContent.story.title,
+        subtitle: toTextOrNull(formData.get("story_subtitle")) ?? homeContent.story.subtitle,
+        body: toTextOrNull(formData.get("story_body")) ?? homeContent.story.body,
+        button_label: toTextOrNull(formData.get("story_button_label")) ?? homeContent.story.button_label,
+        button_url: toTextOrNull(formData.get("story_button_url")) ?? homeContent.story.button_url,
+        image_url: storyImageUrl ?? homeContent.story.image_url,
+      };
+      homeContent.seasonal = {
+        key: "seasonal",
+        title: toTextOrNull(formData.get("seasonal_title")) ?? homeContent.seasonal.title,
+        body: toTextOrNull(formData.get("seasonal_body")) ?? homeContent.seasonal.body,
+        image_url: seasonalImageUrl ?? homeContent.seasonal.image_url,
+      };
+      homeContent.featured_products = {
+        key: "featured_products",
+        title: toTextOrNull(formData.get("featured_products_title")) ?? homeContent.featured_products.title,
+        body: toTextOrNull(formData.get("featured_products_body")) ?? homeContent.featured_products.body,
+      };
+      homeContent.categories = {
+        key: "categories",
+        title: toTextOrNull(formData.get("categories_title")) ?? homeContent.categories.title,
+        body: toTextOrNull(formData.get("categories_body")) ?? homeContent.categories.body,
+      };
+      homeContent.journal = {
+        key: "journal",
+        title: toTextOrNull(formData.get("journal_section_title")) ?? homeContent.journal.title,
+        body: toTextOrNull(formData.get("journal_section_body")) ?? homeContent.journal.body,
+      };
+      homeContent.contact = {
+        key: "contact",
+        title: toTextOrNull(formData.get("contact_section_title")) ?? homeContent.contact.title,
+        body: toTextOrNull(formData.get("contact_section_body")) ?? homeContent.contact.body,
+        button_label: toTextOrNull(formData.get("contact_button_label")) ?? homeContent.contact.button_label,
+        button_url: toTextOrNull(formData.get("contact_button_url")) ?? homeContent.contact.button_url,
+      };
+      content = homeContent;
+    } else {
+      // Legacy JSON mode
+      const homeContent = safeJsonParse<CmsHomepageContent>(contentInput, defaultHomepageContent);
+      homeContent.hero.image_url = heroImageUrl || undefined;
+      homeContent.story.image_url = storyImageUrl || undefined;
+      homeContent.seasonal.image_url = seasonalImageUrl || undefined;
+      content = homeContent;
+    }
   } else {
-    content = safeJsonParse<Record<string, unknown>>(contentInput, { body: "" });
+    const bodyValue = toTextOrNull(formData.get("body"));
+    if (bodyValue !== null) {
+      content = { body: bodyValue };
+    } else {
+      content = safeJsonParse<Record<string, unknown>>(contentInput, { body: "" });
+    }
   }
 
   const payload = {
@@ -217,6 +276,9 @@ export async function updateHomepageContent(formData: FormData) {
   }
 
   revalidatePath("/studio/pages");
+  revalidatePath("/studio/website/homepage");
+  revalidatePath("/studio/website/about");
+  revalidatePath("/studio/website/contact");
 }
 
 export async function updateSiteSettings(formData: FormData) {
