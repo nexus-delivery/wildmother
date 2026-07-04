@@ -86,8 +86,6 @@ create table if not exists public.products (
   updated_at timestamptz not null default now()
 );
 
-alter table public.products add column if not exists price text;
-
 create table if not exists public.media_assets (
   id uuid primary key default gen_random_uuid(),
   file_name text not null,

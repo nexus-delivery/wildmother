@@ -11,7 +11,7 @@ async function getProductPageData() {
       supabase
         .from("products")
         .select(
-          "id,title,slug,short_description,long_description,ingredients,allergens,tags,featured,is_visible,category_id,seo_title,seo_description,og_image_url,updated_at",
+          "id,title,slug,price,short_description,long_description,ingredients,allergens,tags,featured,is_visible,category_id,seo_title,seo_description,og_image_url,updated_at",
         )
         .order("updated_at", { ascending: false }),
       supabase.from("categories").select("id,title").order("title", { ascending: true }),
@@ -121,6 +121,7 @@ function ProductForm({
   product?: {
     title: string;
     slug: string;
+    price: string | null;
     short_description: string | null;
     long_description: string | null;
     ingredients: string | null;
@@ -161,7 +162,7 @@ function ProductForm({
         <span className="font-medium text-[var(--ink)]">Price</span>
         <input
           name="price"
-          defaultValue={""}
+          defaultValue={product?.price || ""}
           placeholder="e.g. £6.50, From £12"
           className="w-full rounded-lg border border-[var(--line)] px-3 py-2"
         />
