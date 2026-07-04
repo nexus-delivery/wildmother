@@ -4,10 +4,13 @@ import { signInStudio } from "@/app/studio/sign-in/actions";
 export default async function StudioSignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; notice?: string; redirectTo?: string }>;
 }) {
   const params = await searchParams;
   const hasError = Boolean(params.error);
+  const verifyEmailNotice = params.notice === "verify_email";
+  const redirectTo = typeof params.redirectTo === "string" ? params.redirectTo : "";
+  const sessionError = params.error === "session_not_persisted";
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--paper)] px-6 py-12">
@@ -16,6 +19,7 @@ export default async function StudioSignInPage({
         <p className="mt-2 text-sm text-[var(--muted)]">Sign in to manage products, pages, and media.</p>
 
         <form action={signInStudio} className="mt-6 space-y-4">
+          <input type="hidden" name="redirect_to" value={redirectTo} />
           <label className="block space-y-1 text-sm">
             <span>Email</span>
             <input name="email" type="email" required className="w-full rounded-md border border-[var(--line)] px-3 py-2" />
@@ -29,7 +33,13 @@ export default async function StudioSignInPage({
               className="w-full rounded-md border border-[var(--line)] px-3 py-2"
             />
           </label>
-          {hasError ? <p className="text-sm text-red-700">Sign-in failed. Check credentials.</p> : null}
+          {verifyEmailNotice ? (
+            <p className="text-sm text-[var(--muted)]">
+              Check your email to confirm the account, then sign in to complete Studio owner setup.
+            </p>
+          ) : null}
+          {sessionError ? <p className="text-sm text-red-700">Sign-in succeeded, but session cookie was not persisted. Please retry.</p> : null}
+          {hasError && !sessionError ? <p className="text-sm text-red-700">Sign-in failed. Check credentials.</p> : null}
           <button className="w-full rounded-md bg-[var(--forest)] px-4 py-2 font-semibold text-white">Sign in</button>
         </form>
 
